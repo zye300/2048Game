@@ -1,0 +1,46 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    
+    flex-direction: column;
+    background-color:beige;
+    text-align: center;
+    color: #9e4040d8;
+    font-weight: bold;
+}
+#introduction{
+    font-size: large;
+    
+
+}
+label{
+    display: inline-block;
+    /* margin: 20px, auto; */
+    
+    width:auto;
+    padding: 2.5px;
+    margin: 2.5px;
+    border-radius: 10px;
+    background-color:#9e4040d8;
+    color: beige;
+    
+}
+input{
+    background-color: antiquewhite;
+    border:1px solid #9e4040d8;
+    border-radius: 10px;
+}
+#confirm{
+    position: relative;
+    right: 30px;
+}
+#confirm_password{
+    position: relative;
+    right: 30px;
+}
+#register{
+    background-color:#9e4040d8;
+    color: beige;
+    border-radius: 10px;
+    border: 1px;
+    font-weight: bold;
+}

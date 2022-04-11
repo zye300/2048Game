@@ -1,0 +1,30 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    display:flex;
+    flex-direction: column;
+    background-color:beige;
+    text-align: center;
+}
+h1{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 40px;
+    font-weight: bold;
+    
+}
+label{
+    display: inline-block;
+    /* margin: 20px, auto; */
+    
+    width: 100px;
+    border-radius: 10px;
+    background-color:#9e4040d8;
+    color: beige;
+}
+input{
+    border-radius: 10px;
+    border:1px solid #9e4040d8;
+}
+p{
+    font-weight: bold;
+    color: #9e4040d8;
+}
