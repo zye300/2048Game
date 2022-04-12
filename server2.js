@@ -11,7 +11,7 @@ const mysql = require("mysql2")
 const conn = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "xxx",
+    password: "xxxx",
     database: "CS2803"
 })
 
@@ -80,9 +80,14 @@ app.post("/register", function(req, res){
 app.post("/attempt_login", function(req, res){
     // we check for the username and password to match.
     conn.query("select password from registeredusers where username = ?", [req.body.username], function (err, rows){
-        if(err){
+        // console.log(req.body.username);
+        // console.log(req.body);
+        // console.log(rows);
+        // console.log(rows.length);
+        if(err||rows.length == 0){
             res.json({success: false, message: "user doesn't exists"});
         }else{
+            
             storedPassword = rows[0].password // rows is an array of objects e.g.: [ { password: '12345' } ]
             // bcrypt.compareSync let's us compare the plaintext password to the hashed password we stored in our database
             if (bcrypt.compareSync(req.body.password, storedPassword)){

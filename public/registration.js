@@ -5,6 +5,8 @@ let confirmPassword = document.getElementById("confirm_password");
 
 function register(event){
     event.preventDefault()
+    console.log(password.value);
+    console.log(confirmPassword.value);
     if (password.value === confirmPassword.value){
         console.log("Password matches!");
         let xhr = new XMLHttpRequest();
