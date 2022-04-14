@@ -4,6 +4,7 @@ body{
     flex-direction: column;
     background-color:beige;
     text-align: center;
+    width: 100%;
 }
 h1{
     font-family: Arial, Helvetica, sans-serif;
@@ -11,8 +12,7 @@ h1{
     font-weight: bolder;
     color: #9e4040d8;
     position: relative;
-    bottom: 20px;
-    
+    top: 5%;    
 }
 p{
     font-weight: bold;
@@ -38,19 +38,21 @@ button:hover{
 #grid_container{
     background-color: #9e4040d8;
     display: grid;
-    width: 500px;
+    width: 40%;
+    min-width: 450px;
     height: 500px;
     border-radius: 10px;
     position: relative;
-    left: 460px;
-    grid-template-columns: auto auto auto auto;
+    left: 30%;
+    grid-template-columns: 22% 22% 22% 22%;
     align-content: space-evenly;
     justify-content: space-evenly;
 }
 .grid_cell{
     display: inline-block;
     background-color:beige;
-    width: 100px;
+    width: 100%;
+    max-width: 100px;
     height: 100px;
     border-radius: 10px;
     text-align: center;
@@ -66,4 +68,24 @@ div span{
     position: relative;
     top: 25px;
     color: #9e4040;
+}
+
+ul {
+    list-style-type:none;
+    margin: 0;
+    padding: 0;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    position: fixed;
+    top: 17%;
+    width: 15%;
+}
+
+
+li a {
+    display: block;
+    font-size: 25px;
+    height: 50px;
+    width: 300px;
+    background-color:darkseagreen;
 }
