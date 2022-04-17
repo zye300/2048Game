@@ -102,6 +102,7 @@ app.post("/attempt_login", function(req, res){
 
 // if the user navigates to localhost:3000/main, then the main page will be loaded.
 app.get("/main", function(req, res){
+    console.log(authenticated);
     if(authenticated){
         res.sendFile(__dirname + "/public/" + "main.html");
     }else{
