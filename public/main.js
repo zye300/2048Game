@@ -7,6 +7,15 @@ button.addEventListener("click", initGame);
 // init array of empty cells
     // ========= var name changed for explicitness =========
 gridCells = new Array(16).fill(false);
+// user score
+var score = 0;
+if (window.localStorage.getItem("scores").length == 0) {
+    var scores = []
+}
+else {
+    var scores = JSON.parse(window.localStorage.getItem("scores"));
+}
+
 
 
 
@@ -26,14 +35,15 @@ function initGame(){
     while(num2 == num1) {
         num2 = Math.floor(Math.random() * 16);
     }
-    document.getElementById("grid-" + Math.floor(num1 / 4) + "-" +num1 % 4).innerHTML = (Math.random() < 0.5) ? 2 : 4;
-    document.getElementById("grid-" + Math.floor(num2 / 4) + "-" +num2 % 4).innerHTML = (Math.random() < 0.5) ? 2 : 4;
-    
-
-
-
+    var grid1 = document.getElementById("grid-" + Math.floor(num1 / 4) + "-" +num1 % 4);
+    grid1.innerHTML = (Math.random() < 0.5) ? 2 : 4;
+    var grid2 = document.getElementById("grid-" + Math.floor(num2 / 4) + "-" +num2 % 4);
+    grid2.innerHTML = (Math.random() < 0.5) ? 2 : 4;
+    score = parseInt(grid1.innerHTML) + parseInt(grid2.innerHTML);
     gridCells[num1] = true;
     gridCells[num2] = true;
+    show_score(score);
+    change_color();
 }
 
 
@@ -47,12 +57,19 @@ function generate_number() {
         while(gridCells[num] == true) {
             num = Math.floor(Math.random() * 16);
         }
-        document.getElementById("grid-" + Math.floor(num / 4) + "-" +num % 4).innerHTML = (Math.random() < 0.5) ? 2 : 4;
-           
+        grid = document.getElementById("grid-" + Math.floor(num / 4) + "-" +num % 4);
+        grid.innerHTML = (Math.random() < 0.5) ? 2 : 4;
+        score+=parseInt(grid.innerHTML);
+        show_score(score);
         gridCells[num] = true;
+        change_color();
     }
 }
 
+function show_score(num) {
+    window.localStorage.setItem("score", num);
+    document.getElementById("score").innerHTML = num;
+}
 
 // check game condition
 function check_game_over() {
@@ -66,7 +83,39 @@ function check_game_over() {
     // ================== TODO: add a gameover screen =================
         // return true if gameover
     console.log("Game over");
+    scores.push(score);
+    window.localStorage.setItem("scores", JSON.stringify(scores));
+    window.location.href = "gameover.html";
     return true;
+}
+
+function change_color() {
+    console.log("Change color");
+    for(let i = 0; i < 16; i++) {
+        var grid = document.getElementById("grid-" + Math.floor(i/4) + "-" + i % 4);
+        var gridCell = document.getElementById("grid_cell-" + Math.floor(i/4) + "-" + i % 4);
+        if(grid.innerHTML.length == 0) {
+            gridCell.style.backgroundColor = "rgb(245, 245, 220)";
+        }
+        else if(grid.innerHTML == 2) {
+            gridCell.style.backgroundColor = "rgb(245, 243, 162)"; 
+        }
+        else if (grid.innerHTML == 4) {
+            gridCell.style.backgroundColor = "rgb(255, 222, 122)";
+        }
+        else if(grid.innerHTML == 8) {
+            gridCell.style.backgroundColor = "rgb(255, 205, 134)";
+        }
+        else if(grid.innerHTML == 16) {
+            gridCell.style.backgroundColor = "rgb(252, 207, 72)";
+        }
+        else if(grid.innerHTML == 32) {
+            gridCell.style.backgroundColor = "rgb(252, 207, 72)";
+        }
+        else if(grid.innerHTML == 64) {
+            gridCell.style.backgroundColor = "rgb(252, 207, 72)";
+        }
+    }
 }
 
 function moveLeft() {
@@ -172,11 +221,7 @@ window.addEventListener("keydown", function (event) {
 
   // ==========================TODO LIST========================
   // 1. move logic
-  // 2. unique color for numbers
-    // array of colors corresponding to powers
-    // or switch block
-  // 3. resize 
-    // （CSS什么苟b东西永远写不对了woc）
+
   // 4. animation (optional)
     // 怎么别人写的那么丝滑啊
 
