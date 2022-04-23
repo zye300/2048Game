@@ -1,6 +1,7 @@
 // newGame button
 let button = document.getElementById("button");
 console.log(button);
+
 // listen newGame button
 button.addEventListener("click", initGame);
 // init array of empty cells
@@ -23,6 +24,7 @@ function initGame(){
             document.getElementById("grid-" + i + "-" + j).innerHTML = '';
         }
     }
+
     // indices of init nums on board
     num1 = Math.floor(Math.random() * 16);
     num2 = Math.floor(Math.random() * 16);
@@ -158,12 +160,10 @@ window.addEventListener("keydown", function (event) {
       case "ArrowLeft":
         // code for "left arrow" key press.
         generate_number();
-
         break;
       case "ArrowRight":
         // code for "right arrow" key press.
         generate_number();
-
         break;
       default:
         return; // Quit when this doesn't handle the key event.
@@ -197,3 +197,4 @@ function updateBoard(board) {
     // （CSS什么苟b东西永远写不对了woc）
   // 4. animation (optional)
     // 怎么别人写的那么丝滑啊
+

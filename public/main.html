@@ -9,10 +9,16 @@
     </head>
     <body>
         <h1>2048</h1>
-        <ul id="nav">
-            <li><a href="index.html">Main Page</a></li>
-            <li><a>History</a></li>
-        </ul>
+        <div class="dropdown">
+            <button onclick="myFunction()" class="dropbtn">MENU</button>
+            <div id="myDropdown" class="dropdown-content">
+              <a href="index.html">Main Page</a>
+              <a href="#">History</a>
+              <a href="#">Link 3</a>
+            </div>
+        </div>
+
+        
         <button id="button">New Game</button>
         <p>Score: <span id="score">0</span></p>
         <div id="grid_container">
