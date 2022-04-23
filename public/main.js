@@ -5,15 +5,22 @@ console.log(button);
 button.addEventListener("click", initGame);
 // init array of empty cells
     // ========= var name changed for explicitness =========
-gridCells = new Array(16).fill(false);
+var board = new Array();
 
 
-// Initialization board
+// ===========================================================
+// gridCells = new Array(16).fill(false);
+// ===========================================================
+
+
+// initialize board
 function initGame(){
     for (let i = 0; i < 4; i++) {
+        board[i] = new Array();
         for(let j = 0; j < 4; j++) {
             // init grid cells in 4*4 board
-            document.getElementById("grid-" + i +"-" +j).innerHTML=null;
+            board[i][j] = 0;
+            document.getElementById("grid-" + i + "-" + j).innerHTML = '';
         }
     }
     // indices of init nums on board
@@ -23,26 +30,15 @@ function initGame(){
     while(num2 == num1) {
         num2 = Math.floor(Math.random() * 16);
     }
-    document.getElementById("grid-" + Math.floor(num1 / 4) + "-" +num1 % 4).innerHTML = (Math.random() < 0.5) ? 2 : 4;
-    document.getElementById("grid-" + Math.floor(num2 / 4) + "-" +num2 % 4).innerHTML = (Math.random() < 0.5) ? 2 : 4;
-    
+    board[Math.floor(num1 / 4)][num1 % 4] = (Math.random() < 0.5) ? 2 : 4;
+    board[Math.floor(num2 / 4)][num2 % 4] = (Math.random() < 0.5) ? 2 : 4;
+    // document.getElementById("grid-" + Math.floor(num1 / 4) + "-" + num1 % 4).innerHTML = (Math.random() < 0.5) ? 2 : 4;
+    // document.getElementById("grid-" + Math.floor(num2 / 4) + "-" + num2 % 4).innerHTML = (Math.random() < 0.5) ? 2 : 4;
     /*
-    if(Math.random() < 0.5) {
-        document.getElementById("grid-" + Math.floor(num1/4) + "-" +num1%4).innerHTML = 2;
-    }
-    else{
-        document.getElementById("grid-" + Math.floor(num1/4) + "-" +num1%4).innerHTML = 4;
-    }
-    if(Math.random() < 0.5) {
-        document.getElementById("grid-" + Math.floor(num2/4) + "-" +num2%4).innerHTML = 2;
-    }
-    else{
-        document.getElementById("grid-" + Math.floor(num2/4) + "-" +num2%4).innerHTML = 4;
-    }
-    */
-
     gridCells[num1] = true;
     gridCells[num2] = true;
+    */
+   updateBoard(board);
 }
 
 
@@ -53,19 +49,14 @@ function generate_number() {
     if(!check_game_over()) {
         num = Math.floor(Math.random() * 16);
         // find an empty cell
-        while(gridCells[num] == true) {
+        // ======= board[Math.floor(num / 4)][num % 4] != 0 ============
+        while(!document.getElementById("grid-" + (num / 4) + "-" + (num % 4)).innerHTML) {
             num = Math.floor(Math.random() * 16);
         }
-        document.getElementById("grid-" + Math.floor(num / 4) + "-" +num % 4).innerHTML = (Math.random() < 0.5) ? 2 : 4;
-        /*
-        if(Math.random() < 0.5) {
-            document.getElementById("grid-" + Math.floor(num/4) + "-" +num%4).innerHTML = 2;
-        }
-        else{
-            document.getElementById("grid-" + Math.floor(num/4) + "-" +num%4).innerHTML = 4;
-        }
-        */
-        gridCells[num] = true;
+        board[Math.floor(num / 4)][num % 4] = (Math.random() < 0.5) ? 2 : 4;
+        // document.getElementById("grid-" + Math.floor(num / 4) + "-" + num % 4).innerHTML = (Math.random() < 0.5) ? 2 : 4;
+        
+        // gridCells[num] = true;
     }
 }
 
@@ -74,7 +65,7 @@ function generate_number() {
 function check_game_over() {
     console.log("call check game over");
     for(let i = 0; i < 16; i++) {
-        if(!gridCells[i]) {
+        if(board[Math.floor(i / 4)][i % 4] == 0) {
             console.log("Not Game over");
             return false;
         }
@@ -85,30 +76,28 @@ function check_game_over() {
     return true;
 }
 
-function moveLeft() {
-    if (!canMoveLeft(gridCells)) {
+function moveLeft(board) {
+    if (!canMoveLeft(board)) {
         // cannot move
         return false;
     }
-    // can move
+    // each row
     for (let i = 0; i < 4; i++) {
         // ignore column 1
         for (let j = 1; j < 4; j++) {
-            if (gridCells[4 * i + j]) {
-                // non-empty cell
+            // non-empty cell
+            if (board[i][j] != 0) {    
                 for (let k = 0; k < j; k++) {
                     // check all left cells
-                    if (!gridCells[4 * i + k] && clearBetween(i, j, k, gridCells)) {   // ======= vals in between ======
+                    if (board[i][k] == 0 && clearBetween(i, j, k, board)) {   // ======= vals in between ======
                         // has an empty left cell & all clear in between
                             // move to left
                         // ================ TODO: animation ================
-                        document.getElementById("grid-" + i + "-" + k).innerHTML = document.getElementById("grid-" + i + "-" + j).innerHTML;
-                        document.getElementById("grid-" + i + "-" + j).innerHTML = '';
-                    } else if ((document.getElementById("grid-" + i + "-" + j).innerHTML
-                                == document.getElementById("grid-" + i + "-" + k).innerHTML)
-                            && clearBetween(i, j, k, gridCells)  // ======= vals in between ======
-                            ) {
-
+                        board[i][k] = board[i][j];
+                        board[i][j] = 0;
+                    } else if ((board[i][j] == board[i][k]) && clearBetween(i, j, k, board)) {
+                        board[i][k] += board[i][j];
+                        board[i][j] = 0;
                     }
                 }
             }
@@ -118,16 +107,15 @@ function moveLeft() {
     return true;
 }
 
-function canMoveLeft(grid) {
+function canMoveLeft(board) {
     for (let i = 0; i < 4; i++) {
         // ignore column 1
         for (let j = 1; j < 4; j++) {
-            if (grid[4 * i + j]) {
+            if (board[i][j] != 0) {
                 // left empty
-                if (grid[4 * i + j - 1]
+                if (board[i][j - 1] == 0
                         // left equal
-                        && document.getElementById("grid-" + i + "-" + j).innerHTML
-                            == document.getElementById("grid-" + i + "-" + (j - 1)).innerHTML) {
+                        && board[i][j] == board[i][j - 1]) {
                     return true;
                 }
             }
@@ -136,9 +124,9 @@ function canMoveLeft(grid) {
     return false;
 }
 
-function clearBetween(row, col, iterCol, grid) {
+function clearBetween(row, col, iterCol, board) {
     for (let i = iterCol + 1; i < col; i++) {
-        if (grid[4 * row + i]) {
+        if (board[row][i] != 0) {
             return false;
         }
     }
@@ -155,14 +143,12 @@ window.addEventListener("keydown", function (event) {
     switch (event.key) {
       case "ArrowDown":
         // if successfully move to left, and move to left
-        if (moveLeft()) {
+        if (moveLeft(board)) {
             // generate a num
             generate_number();
             // check game conditon
             check_game_over();
         }
-        
-        
         break;
       case "ArrowUp":
         // code for "up arrow" key press.
@@ -185,7 +171,22 @@ window.addEventListener("keydown", function (event) {
   
     // Cancel the default action to avoid it being handled twice
     event.preventDefault();
+
+    updateBoard();
+    
   }, true);
+
+function updateBoard(board) {
+    // update board
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (board[i][j] != 0) {
+                document.getElementById("grid-" + i + "-" + j).innerHTML = board[i][j];  
+            }
+                      
+        }
+    }
+}
 
   // ==========================TODO LIST========================
   // 1. move logic
