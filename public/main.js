@@ -1,6 +1,5 @@
 // newGame button
 let button = document.getElementById("button");
-console.log(button);
 
 // listen newGame button
 button.addEventListener("click", initGame);
@@ -71,6 +70,21 @@ function show_score(num) {
     document.getElementById("score").innerHTML = num;
 }
 
+function update_gridCells() {
+    for (let i = 0; i < 4; i++) {
+        for(let j = 0; j < 4; j++) {
+            // init grid cells in 4*4 board
+            if (document.getElementById("grid-" + i +"-" +j).innerHTML.length != 0) {
+                gridCells[4*i + j] = true;
+            }
+            else {
+                gridCells[4*i + j] = false;
+            }
+
+        }
+    }
+}
+
 // check game condition
 function check_game_over() {
     console.log("call check game over");
@@ -90,7 +104,6 @@ function check_game_over() {
 }
 
 function change_color() {
-    console.log("Change color");
     for(let i = 0; i < 16; i++) {
         var grid = document.getElementById("grid-" + Math.floor(i/4) + "-" + i % 4);
         var gridCell = document.getElementById("grid_cell-" + Math.floor(i/4) + "-" + i % 4);
@@ -107,75 +120,265 @@ function change_color() {
             gridCell.style.backgroundColor = "rgb(255, 205, 134)";
         }
         else if(grid.innerHTML == 16) {
-            gridCell.style.backgroundColor = "rgb(252, 207, 72)";
+            gridCell.style.backgroundColor = "rgb(255, 176, 134)";
         }
         else if(grid.innerHTML == 32) {
-            gridCell.style.backgroundColor = "rgb(252, 207, 72)";
+            gridCell.style.backgroundColor = "rgb(246, 137, 104)";
         }
         else if(grid.innerHTML == 64) {
-            gridCell.style.backgroundColor = "rgb(252, 207, 72)";
+            gridCell.style.backgroundColor = "rgb(255, 111, 104)";
         }
     }
+}
+
+function moveLeftHelper(move) {
+    for (let i = 0; i < 4; i++) {
+        let j = -1;
+        do{
+            j++;
+            grid = document.getElementById("grid-" + i + "-" + j);
+        }while(j < 4 && grid.innerHTML.length != 0)
+        empty = j;
+        // ignore column 1
+        for (let n = j + 1; n < 4; n++) {
+            grid = document.getElementById("grid-" + i + "-" + n);
+            if (grid.innerHTML.length != 0) {
+                document.getElementById("grid-" + i + "-" + empty).innerHTML = grid.innerHTML;
+                grid.innerHTML = null;
+                empty++;
+                move = true;
+                console.log("move numbers");
+            }
+        }
+    }
+    return move;
 }
 
 function moveLeft() {
-    if (!canMoveLeft(gridCells)) {
-        // cannot move
-        return false;
-    }
-    // can move
-    for (let i = 0; i < 4; i++) {
-        // ignore column 1
-        for (let j = 1; j < 4; j++) {
-            if (gridCells[4 * i + j]) {
-                // non-empty cell
-                for (let k = 0; k < j; k++) {
-                    // check all left cells
-                    if (!gridCells[4 * i + k] && clearBetween(i, j, k, gridCells)) {   // ======= vals in between ======
-                        // has an empty left cell & all clear in between
-                            // move to left
-                        // ================ TODO: animation ================
-                        document.getElementById("grid-" + i + "-" + k).innerHTML = document.getElementById("grid-" + i + "-" + j).innerHTML;
-                        document.getElementById("grid-" + i + "-" + j).innerHTML = '';
-                    } else if ((document.getElementById("grid-" + i + "-" + j).innerHTML
-                                == document.getElementById("grid-" + i + "-" + k).innerHTML)
-                            && clearBetween(i, j, k, gridCells)  // ======= vals in between ======
-                            ) {
+    move = false;
+    move = moveLeftHelper(move);
 
-                    }
-                }
+    for (let i = 0; i < 4; i++) {
+        last_num = document.getElementById("grid-" + i + "-" + 0).innerHTML;
+        if(last_num.length == 0) {
+            continue;
+        }
+        for (let j = 1; j < 4; j++) {
+            current_num = document.getElementById("grid-" + i + "-" + j).innerHTML;
+            if(current_num.length == 0) {
+                break;
+            }
+            else if(current_num === last_num) {
+                num = j - 1;
+                last_grid = document.getElementById("grid-" + i + "-" + num);
+                last_grid.innerHTML = current_num * 2;
+                current_grid = document.getElementById("grid-" + i + "-" + j);
+                current_grid.innerHTML = null;
+                last_num = null;
+                console.log("combine numbers");
+                console.log("combine " + "grid-" + i + "-" + num + " and grid-" + i + "-" + j )
+                move = true;
+            }
+            else {
+                last_num = current_num
             }
         }
     }
+    move = moveLeftHelper(move);
 
-    return true;
+    if (move) {
+        update_gridCells();
+        change_color();
+        generate_number();
+    }
+    else {
+        check_game_over();
+    }
 }
 
-function canMoveLeft(grid) {
+function moveRightHelper(move) {
     for (let i = 0; i < 4; i++) {
+        let j = 4;
+        do{
+            j--;
+            grid = document.getElementById("grid-" + i + "-" + j);
+        }while(j >=0 &&grid.innerHTML.length != 0)
+        empty = j;
         // ignore column 1
-        for (let j = 1; j < 4; j++) {
-            if (grid[4 * i + j]) {
-                // left empty
-                if (grid[4 * i + j - 1]
-                        // left equal
-                        && document.getElementById("grid-" + i + "-" + j).innerHTML
-                            == document.getElementById("grid-" + i + "-" + (j - 1)).innerHTML) {
-                    return true;
-                }
+        for (let n = j - 1; n >= 0; n--) {
+            grid = document.getElementById("grid-" + i + "-" + n);
+            if (grid.innerHTML.length != 0) {
+                document.getElementById("grid-" + i + "-" + empty).innerHTML = grid.innerHTML;
+                grid.innerHTML = null;
+                empty--;
+                move = true;
+                console.log("move numbers");
             }
         }
     }
-    return false;
+    return move;
 }
 
-function clearBetween(row, col, iterCol, grid) {
-    for (let i = iterCol + 1; i < col; i++) {
-        if (grid[4 * row + i]) {
-            return false;
+function moveRight(){
+    move = false;
+    move = moveRightHelper(move);
+    for (let i = 0; i < 4; i++) {
+        last_num = document.getElementById("grid-" + i + "-" + 3).innerHTML;
+        if(last_num.length == 0) {
+            continue;
+        }
+        for (let j = 2; j >= 0; j--) {
+            current_num = document.getElementById("grid-" + i + "-" + j).innerHTML;
+            if(current_num.length == 0) {
+                break;
+            }
+            else if(current_num === last_num) {
+                num = j + 1;
+                last_grid = document.getElementById("grid-" + i + "-" + num);
+                last_grid.innerHTML = current_num * 2;
+                current_grid = document.getElementById("grid-" + i + "-" + j);
+                current_grid.innerHTML = null;
+                last_num = null;
+                console.log("combine numbers");
+                console.log("combine " + "grid-" + i + "-" + num + " and grid-" + i + "-" + j )
+                move = true;
+            }
+            else {
+                last_num = current_num
+            }
         }
     }
-    return true;
+    move = moveRightHelper(move);
+    if (move) {
+        update_gridCells();
+        change_color();
+        generate_number();
+    }
+    else {
+        check_game_over();
+    }
+}
+
+function moveUpHelper(move) {
+    for (let j = 0; j < 4; j++) {
+        let i = -1;
+        do{
+            i++;
+            grid = document.getElementById("grid-" + i + "-" + j);
+        }while(i < 4 && grid.innerHTML.length != 0)
+        empty = i;
+        // ignore column 1
+        for (let n = i + 1; n < 4; n++) {
+            grid = document.getElementById("grid-" + n + "-" + j);
+            if (grid.innerHTML.length != 0) {
+                document.getElementById("grid-" + empty + "-" + j).innerHTML = grid.innerHTML;
+                grid.innerHTML = null;
+                empty++;
+                move = true;
+                console.log("move numbers");
+            }
+        }
+    }
+    return move;
+}
+
+function moveUp() {
+    move = false;
+    move = moveUpHelper(move);
+    for (let j = 0; j < 4; j++) {
+        last_num = document.getElementById("grid-" + 0 + "-" + j).innerHTML;
+        if(last_num.length == 0) {
+            continue;
+        }
+        for (let i = 1; i < 4; i++) {
+            current_num = document.getElementById("grid-" + i + "-" + j).innerHTML;
+            if(current_num.length == 0) {
+                break;
+            }
+            else if(current_num === last_num) {
+                num = i - 1;
+                last_grid = document.getElementById("grid-" + num + "-" + j);
+                last_grid.innerHTML = current_num * 2;
+                current_grid = document.getElementById("grid-" + i + "-" + j);
+                current_grid.innerHTML = null;
+                last_num = null;
+                move = true;
+            }
+            else {
+                last_num = current_num
+            }
+        }
+    }
+    move = moveUpHelper(move);
+    if (move) {
+        update_gridCells();
+        change_color();
+        generate_number();
+    }
+    else {
+        check_game_over();
+    }
+}
+
+function moveDownHelper(move) {
+    for (let j = 0; j < 4; j++) {
+        let i = 4;
+        do{
+            i--;
+            grid = document.getElementById("grid-" + i + "-" + j);
+        }while(i >= 0 && grid.innerHTML.length != 0)
+        empty = i;
+        // ignore column 1
+        for (let n = i - 1; n >= 0; n--) {
+            grid = document.getElementById("grid-" + n + "-" + j);
+            if (grid.innerHTML.length != 0) {
+                document.getElementById("grid-" + empty + "-" + j).innerHTML = grid.innerHTML;
+                grid.innerHTML = null;
+                empty--;
+                move = true;
+                console.log("move numbers");
+            }
+        }
+    }
+    return move;
+}
+
+function moveDown() {
+    move = false;
+    move = moveDownHelper(move);
+    for (let j = 0; j < 4; j++) {
+        last_num = document.getElementById("grid-" + 3 + "-" + j).innerHTML;
+        if(last_num.length == 0) {
+            continue;
+        }
+        for (let i = 2; i >= 0; i--) {
+            current_num = document.getElementById("grid-" + i + "-" + j).innerHTML;
+            if(current_num.length == 0) {
+                break;
+            }
+            else if(current_num === last_num) {
+                num = i + 1;
+                last_grid = document.getElementById("grid-" + num + "-" + j);
+                last_grid.innerHTML = current_num * 2;
+                current_grid = document.getElementById("grid-" + i + "-" + j);
+                current_grid.innerHTML = null;
+                last_num = null;
+                move = true;
+            }
+            else {
+                last_num = current_num
+            }
+        }
+    }
+    move = moveDownHelper(move);
+    if (move) {
+        update_gridCells();
+        change_color();
+        generate_number();
+    }
+    else {
+        check_game_over();
+    }
 }
 
 // update game
@@ -188,28 +391,19 @@ window.addEventListener("keydown", function (event) {
     switch (event.key) {
       case "ArrowDown":
         // if successfully move to left, and move to left
-        if (moveLeft()) {
-            // generate a num
-            generate_number();
-            // check game conditon
-            check_game_over();
-        }
-        
-
-        
+        moveDown();
         break;
       case "ArrowUp":
         // code for "up arrow" key press.
-        generate_number();
-
+        moveUp();
         break;
       case "ArrowLeft":
         // code for "left arrow" key press.
-        generate_number();
+        moveLeft();
         break;
       case "ArrowRight":
         // code for "right arrow" key press.
-        generate_number();
+        moveRight();
         break;
       default:
         return; // Quit when this doesn't handle the key event.
@@ -220,8 +414,6 @@ window.addEventListener("keydown", function (event) {
   }, true);
 
   // ==========================TODO LIST========================
-  // 1. move logic
-
   // 4. animation (optional)
     // 怎么别人写的那么丝滑啊
 
