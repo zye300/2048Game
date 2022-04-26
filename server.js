@@ -43,9 +43,9 @@ app.post("/attempt_login", function(req, res){
 })
 
 // if the user navigates to localhost:3000/main, then the main page will be loaded.
-app.get("/main", function(req, res){
-    res.sendFile(__dirname + "/public/" + "main.html");
-})
+// app.get("/main", function(req, res){
+//     res.sendFile(__dirname + "/public/" + "main.html");
+// })
 
 // Start the web server
 // 3000 is the port #

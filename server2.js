@@ -11,7 +11,7 @@ const mysql = require("mysql2")
 const conn = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "xxx",
+    password: "Bella20020125Y",
     database: "CS2803"
 })
 
@@ -25,8 +25,10 @@ conn.connect(function(err){
 
 // app will be our express instance
 const app = express();
-username="root"
-password="Bella20020125Y"
+username="root";
+password="Bella20020125Y";
+
+currentuser = null;
 
 // Serve static files from the public dir
 // if you do not include this, then navigation to the localhost will not show anything
@@ -92,6 +94,7 @@ app.post("/attempt_login", function(req, res){
             // bcrypt.compareSync let's us compare the plaintext password to the hashed password we stored in our database
             if (bcrypt.compareSync(req.body.password, storedPassword)){
                 authenticated = true;
+                currentuser = req.body.username;
                 res.json({success: true, message: "logged in"})
             }else{
                 res.json({success: false, message:"password is incorrect"})
@@ -102,7 +105,6 @@ app.post("/attempt_login", function(req, res){
 
 // if the user navigates to localhost:3000/main, then the main page will be loaded.
 app.get("/main", function(req, res){
-    console.log(authenticated);
     if(authenticated){
         res.sendFile(__dirname + "/public/" + "main.html");
     }else{
@@ -111,9 +113,22 @@ app.get("/main", function(req, res){
     
 })
 
+app.post("/gameover", function(req, res){
+    conn.query("select history from registeredusers where username = ?", currentuser, function (err, rows){
+    current_score = req.body.score;
+    if(rows[0].history == null || current_score > rows[0].history){
+        updateUser = "update registeredusers set history = ? where username = ?"
+        conn.query(updateUser, [current_score, currentuser], function(err, rows){
+        })
+    }
+    })
+})
+
 // Start the web server
 // 3000 is the port #
 // followed by a callback function
 app.listen(3000, function() {
-   console.log("Listening on port 3000...");
-});
+    console.log("Listening on port 3000...");
+ });
+
+
