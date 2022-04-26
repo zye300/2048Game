@@ -3,3 +3,4 @@ function show_score() {
 }
 
 show_score();
+

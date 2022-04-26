@@ -1,3 +1,4 @@
+
 // newGame button
 let button = document.getElementById("button");
 let translateButton = document.getElementById("translate");
@@ -98,11 +99,28 @@ function check_game_over() {
     }
     // ================== TODO: add a gameover screen =================
         // return true if gameover
-    console.log("Game over");
     scores.push(score);
     window.localStorage.setItem("scores", JSON.stringify(scores));
-    window.location.href = "gameover.html";
+    gameover();
+    window.location.href = "gameover.html"
     return true;
+}
+
+
+function gameover(){
+    let xhr = new XMLHttpRequest
+    xhr.addEventListener("load", responseHandler)
+    query='score=' + score;
+    url = `/gameover`
+    xhr.responseType = "json";   
+    xhr.open("POST", url)
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+    // notice the query string is passed as a parameter in xhr.send()
+    // this is to prevent the data from being easily sniffed
+    xhr.send(query)
+}
+function responseHandler(){
+    
 }
 
 function change_color() {
