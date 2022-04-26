@@ -1,8 +1,10 @@
 // newGame button
 let button = document.getElementById("button");
+let translateButton = document.getElementById("translate");
 
 // listen newGame button
 button.addEventListener("click", initGame);
+translateButton.addEventListener("click", translate);
 // init array of empty cells
     // ========= var name changed for explicitness =========
 gridCells = new Array(16).fill(false);
@@ -38,7 +40,7 @@ function initGame(){
     grid1.innerHTML = (Math.random() < 0.5) ? 2 : 4;
     var grid2 = document.getElementById("grid-" + Math.floor(num2 / 4) + "-" +num2 % 4);
     grid2.innerHTML = (Math.random() < 0.5) ? 2 : 4;
-    score = parseInt(grid1.innerHTML) + parseInt(grid2.innerHTML);
+    // score = parseInt(grid1.innerHTML) + parseInt(grid2.innerHTML);
     gridCells[num1] = true;
     gridCells[num2] = true;
     show_score(score);
@@ -58,7 +60,7 @@ function generate_number() {
         }
         grid = document.getElementById("grid-" + Math.floor(num / 4) + "-" +num % 4);
         grid.innerHTML = (Math.random() < 0.5) ? 2 : 4;
-        score+=parseInt(grid.innerHTML);
+        // score+=parseInt(grid.innerHTML);
         show_score(score);
         gridCells[num] = true;
         change_color();
@@ -172,6 +174,7 @@ function moveLeft() {
                 num = j - 1;
                 last_grid = document.getElementById("grid-" + i + "-" + num);
                 last_grid.innerHTML = current_num * 2;
+                score += current_num * 2;
                 current_grid = document.getElementById("grid-" + i + "-" + j);
                 current_grid.innerHTML = null;
                 last_num = null;
@@ -236,6 +239,7 @@ function moveRight(){
                 num = j + 1;
                 last_grid = document.getElementById("grid-" + i + "-" + num);
                 last_grid.innerHTML = current_num * 2;
+                score += current_num * 2;
                 current_grid = document.getElementById("grid-" + i + "-" + j);
                 current_grid.innerHTML = null;
                 last_num = null;
@@ -299,6 +303,7 @@ function moveUp() {
                 num = i - 1;
                 last_grid = document.getElementById("grid-" + num + "-" + j);
                 last_grid.innerHTML = current_num * 2;
+                score += current_num * 2;
                 current_grid = document.getElementById("grid-" + i + "-" + j);
                 current_grid.innerHTML = null;
                 last_num = null;
@@ -360,6 +365,7 @@ function moveDown() {
                 num = i + 1;
                 last_grid = document.getElementById("grid-" + num + "-" + j);
                 last_grid.innerHTML = current_num * 2;
+                score += current_num * 2;
                 current_grid = document.getElementById("grid-" + i + "-" + j);
                 current_grid.innerHTML = null;
                 last_num = null;
@@ -411,9 +417,35 @@ window.addEventListener("keydown", function (event) {
   
     // Cancel the default action to avoid it being handled twice
     event.preventDefault();
-  }, true);
+}, true);
 
-  // ==========================TODO LIST========================
-  // 4. animation (optional)
-    // 怎么别人写的那么丝滑啊
+function translate() {
+
+    let xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("load", responseReceivedHandler);
+
+    let text = button.innerHTML;
+    // let apiKey = "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f";
+    xhr.open("POST", "https://google-translate1.p.rapidapi.com/language/translate/v2");
+    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+    // xhr.setRequestHeader("Accept-Encoding", "application/gzip");
+    xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
+    xhr.setRequestHeader("X-RapidAPI-Key", "0c68a140c6msh5173f22773b2ed7p1dd524jsn2cb3173b445b");
+
+    let data = "q=" + text + "&target=de"
+    xhr.send(data);
+
+}
+    
+function responseReceivedHandler() {
+    let text = document.getElementById("button");
+    if (this.status === 200) {
+        object = JSON.parse(this.responseText)
+        text.innerHTML = object.data.translations[0].translatedText;
+    } else {
+        text.innerHTML = "Translation Error";
+    }
+}
 
