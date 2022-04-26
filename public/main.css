@@ -38,7 +38,7 @@ p{
     bottom:30px; 
     
 }
-#button{
+#button, #translate{
     color: #9e4040d8;
     width: 100px;
     border-radius: 10px;
@@ -47,6 +47,9 @@ p{
 
 }
 #button:hover{
+    background-color: rgba(234, 221, 221, 0.963);
+}
+#translate:hover{
     background-color: rgba(234, 221, 221, 0.963);
 }
 #grid_container{
