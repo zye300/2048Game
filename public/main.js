@@ -10,7 +10,7 @@ translateButton.addEventListener("click", translate);
 gridCells = new Array(16).fill(false);
 // user score
 var score = 0;
-if (window.localStorage.getItem("scores").length == 0) {
+if (window.localStorage.getItem("scores") == null) {
     var scores = []
 }
 else {
@@ -388,11 +388,16 @@ function moveDown() {
 }
 
 // update game
-window.addEventListener("keydown", function (event) {
+
+document.addEventListener("keydown", function (event) {
     // Do nothing if the event was already processed
-    if (event.defaultPrevented) {
-      return;
+    if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(event.code) > -1) {
+        event.preventDefault();
     }
+    console.log("keydown detected")
+    // if (event.defaultPrevented) {
+    //   return;
+    // }
     // handle 
     switch (event.key) {
       case "ArrowDown":
@@ -417,7 +422,7 @@ window.addEventListener("keydown", function (event) {
   
     // Cancel the default action to avoid it being handled twice
     event.preventDefault();
-}, true);
+}, false);
 
 function translate() {
 
@@ -434,7 +439,7 @@ function translate() {
     xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
     xhr.setRequestHeader("X-RapidAPI-Key", "0c68a140c6msh5173f22773b2ed7p1dd524jsn2cb3173b445b");
 
-    let data = "q=" + text + "&target=de"
+    let data = "q=" + text + "&target=es"
     xhr.send(data);
 
 }
