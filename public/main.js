@@ -1,12 +1,22 @@
 // newGame button
 let button = document.getElementById("button");
-console.log(button);
+let translateButton = document.getElementById("translate");
 
 // listen newGame button
 button.addEventListener("click", initGame);
+translateButton.addEventListener("click", translate);
 // init array of empty cells
     // ========= var name changed for explicitness =========
-var board = new Array();
+gridCells = new Array(16).fill(false);
+// user score
+var score = 0;
+if (window.localStorage.getItem("scores").length == 0) {
+    var scores = []
+}
+else {
+    var scores = JSON.parse(window.localStorage.getItem("scores"));
+}
+
 
 
 // ===========================================================
@@ -32,15 +42,15 @@ function initGame(){
     while(num2 == num1) {
         num2 = Math.floor(Math.random() * 16);
     }
-    board[Math.floor(num1 / 4)][num1 % 4] = (Math.random() < 0.5) ? 2 : 4;
-    board[Math.floor(num2 / 4)][num2 % 4] = (Math.random() < 0.5) ? 2 : 4;
-    // document.getElementById("grid-" + Math.floor(num1 / 4) + "-" + num1 % 4).innerHTML = (Math.random() < 0.5) ? 2 : 4;
-    // document.getElementById("grid-" + Math.floor(num2 / 4) + "-" + num2 % 4).innerHTML = (Math.random() < 0.5) ? 2 : 4;
-    /*
+    var grid1 = document.getElementById("grid-" + Math.floor(num1 / 4) + "-" +num1 % 4);
+    grid1.innerHTML = (Math.random() < 0.5) ? 2 : 4;
+    var grid2 = document.getElementById("grid-" + Math.floor(num2 / 4) + "-" +num2 % 4);
+    grid2.innerHTML = (Math.random() < 0.5) ? 2 : 4;
+    // score = parseInt(grid1.innerHTML) + parseInt(grid2.innerHTML);
     gridCells[num1] = true;
     gridCells[num2] = true;
-    */
-   updateBoard(board);
+    show_score(score);
+    change_color();
 }
 
 
@@ -55,13 +65,34 @@ function generate_number() {
         while(!document.getElementById("grid-" + (num / 4) + "-" + (num % 4)).innerHTML) {
             num = Math.floor(Math.random() * 16);
         }
-        board[Math.floor(num / 4)][num % 4] = (Math.random() < 0.5) ? 2 : 4;
-        // document.getElementById("grid-" + Math.floor(num / 4) + "-" + num % 4).innerHTML = (Math.random() < 0.5) ? 2 : 4;
-        
-        // gridCells[num] = true;
+        grid = document.getElementById("grid-" + Math.floor(num / 4) + "-" +num % 4);
+        grid.innerHTML = (Math.random() < 0.5) ? 2 : 4;
+        // score+=parseInt(grid.innerHTML);
+        show_score(score);
+        gridCells[num] = true;
+        change_color();
     }
 }
 
+function show_score(num) {
+    window.localStorage.setItem("score", num);
+    document.getElementById("score").innerHTML = num;
+}
+
+function update_gridCells() {
+    for (let i = 0; i < 4; i++) {
+        for(let j = 0; j < 4; j++) {
+            // init grid cells in 4*4 board
+            if (document.getElementById("grid-" + i +"-" +j).innerHTML.length != 0) {
+                gridCells[4*i + j] = true;
+            }
+            else {
+                gridCells[4*i + j] = false;
+            }
+
+        }
+    }
+}
 
 // check game condition
 function check_game_over() {
@@ -75,64 +106,292 @@ function check_game_over() {
     // ================== TODO: add a gameover screen =================
         // return true if gameover
     console.log("Game over");
+    scores.push(score);
+    window.localStorage.setItem("scores", JSON.stringify(scores));
+    window.location.href = "gameover.html";
     return true;
 }
 
-function moveLeft(board) {
-    if (!canMoveLeft(board)) {
-        // cannot move
-        return false;
+function change_color() {
+    for(let i = 0; i < 16; i++) {
+        var grid = document.getElementById("grid-" + Math.floor(i/4) + "-" + i % 4);
+        var gridCell = document.getElementById("grid_cell-" + Math.floor(i/4) + "-" + i % 4);
+        if(grid.innerHTML.length == 0) {
+            gridCell.style.backgroundColor = "rgb(245, 245, 220)";
+        }
+        else if(grid.innerHTML == 2) {
+            gridCell.style.backgroundColor = "rgb(245, 243, 162)"; 
+        }
+        else if (grid.innerHTML == 4) {
+            gridCell.style.backgroundColor = "rgb(255, 222, 122)";
+        }
+        else if(grid.innerHTML == 8) {
+            gridCell.style.backgroundColor = "rgb(255, 205, 134)";
+        }
+        else if(grid.innerHTML == 16) {
+            gridCell.style.backgroundColor = "rgb(255, 176, 134)";
+        }
+        else if(grid.innerHTML == 32) {
+            gridCell.style.backgroundColor = "rgb(246, 137, 104)";
+        }
+        else if(grid.innerHTML == 64) {
+            gridCell.style.backgroundColor = "rgb(255, 111, 104)";
+        }
     }
-    // each row
+}
+
+function moveLeftHelper(move) {
     for (let i = 0; i < 4; i++) {
+        let j = -1;
+        do{
+            j++;
+            grid = document.getElementById("grid-" + i + "-" + j);
+        }while(j < 4 && grid.innerHTML.length != 0)
+        empty = j;
         // ignore column 1
-        for (let j = 1; j < 4; j++) {
-            // non-empty cell
-            if (board[i][j] != 0) {    
-                for (let k = 0; k < j; k++) {
-                    // check all left cells
-                    if (board[i][k] == 0 && clearBetween(i, j, k, board)) {   // ======= vals in between ======
-                        // has an empty left cell & all clear in between
-                            // move to left
-                        // ================ TODO: animation ================
-                        board[i][k] = board[i][j];
-                        board[i][j] = 0;
-                    } else if ((board[i][j] == board[i][k]) && clearBetween(i, j, k, board)) {
-                        board[i][k] += board[i][j];
-                        board[i][j] = 0;
-                    }
-                }
+        for (let n = j + 1; n < 4; n++) {
+            grid = document.getElementById("grid-" + i + "-" + n);
+            if (grid.innerHTML.length != 0) {
+                document.getElementById("grid-" + i + "-" + empty).innerHTML = grid.innerHTML;
+                grid.innerHTML = null;
+                empty++;
+                move = true;
+                console.log("move numbers");
             }
         }
     }
-
-    return true;
+    return move;
 }
 
-function canMoveLeft(board) {
+function moveLeft() {
+    move = false;
+    move = moveLeftHelper(move);
+
     for (let i = 0; i < 4; i++) {
-        // ignore column 1
+        last_num = document.getElementById("grid-" + i + "-" + 0).innerHTML;
+        if(last_num.length == 0) {
+            continue;
+        }
         for (let j = 1; j < 4; j++) {
-            if (board[i][j] != 0) {
-                // left empty
-                if (board[i][j - 1] == 0
-                        // left equal
-                        && board[i][j] == board[i][j - 1]) {
-                    return true;
-                }
+            current_num = document.getElementById("grid-" + i + "-" + j).innerHTML;
+            if(current_num.length == 0) {
+                break;
+            }
+            else if(current_num === last_num) {
+                num = j - 1;
+                last_grid = document.getElementById("grid-" + i + "-" + num);
+                last_grid.innerHTML = current_num * 2;
+                score += current_num * 2;
+                current_grid = document.getElementById("grid-" + i + "-" + j);
+                current_grid.innerHTML = null;
+                last_num = null;
+                console.log("combine numbers");
+                console.log("combine " + "grid-" + i + "-" + num + " and grid-" + i + "-" + j )
+                move = true;
+            }
+            else {
+                last_num = current_num
             }
         }
     }
-    return false;
+    move = moveLeftHelper(move);
+
+    if (move) {
+        update_gridCells();
+        change_color();
+        generate_number();
+    }
+    else {
+        check_game_over();
+    }
 }
 
-function clearBetween(row, col, iterCol, board) {
-    for (let i = iterCol + 1; i < col; i++) {
-        if (board[row][i] != 0) {
-            return false;
+function moveRightHelper(move) {
+    for (let i = 0; i < 4; i++) {
+        let j = 4;
+        do{
+            j--;
+            grid = document.getElementById("grid-" + i + "-" + j);
+        }while(j >=0 &&grid.innerHTML.length != 0)
+        empty = j;
+        // ignore column 1
+        for (let n = j - 1; n >= 0; n--) {
+            grid = document.getElementById("grid-" + i + "-" + n);
+            if (grid.innerHTML.length != 0) {
+                document.getElementById("grid-" + i + "-" + empty).innerHTML = grid.innerHTML;
+                grid.innerHTML = null;
+                empty--;
+                move = true;
+                console.log("move numbers");
+            }
         }
     }
-    return true;
+    return move;
+}
+
+function moveRight(){
+    move = false;
+    move = moveRightHelper(move);
+    for (let i = 0; i < 4; i++) {
+        last_num = document.getElementById("grid-" + i + "-" + 3).innerHTML;
+        if(last_num.length == 0) {
+            continue;
+        }
+        for (let j = 2; j >= 0; j--) {
+            current_num = document.getElementById("grid-" + i + "-" + j).innerHTML;
+            if(current_num.length == 0) {
+                break;
+            }
+            else if(current_num === last_num) {
+                num = j + 1;
+                last_grid = document.getElementById("grid-" + i + "-" + num);
+                last_grid.innerHTML = current_num * 2;
+                score += current_num * 2;
+                current_grid = document.getElementById("grid-" + i + "-" + j);
+                current_grid.innerHTML = null;
+                last_num = null;
+                console.log("combine numbers");
+                console.log("combine " + "grid-" + i + "-" + num + " and grid-" + i + "-" + j )
+                move = true;
+            }
+            else {
+                last_num = current_num
+            }
+        }
+    }
+    move = moveRightHelper(move);
+    if (move) {
+        update_gridCells();
+        change_color();
+        generate_number();
+    }
+    else {
+        check_game_over();
+    }
+}
+
+function moveUpHelper(move) {
+    for (let j = 0; j < 4; j++) {
+        let i = -1;
+        do{
+            i++;
+            grid = document.getElementById("grid-" + i + "-" + j);
+        }while(i < 4 && grid.innerHTML.length != 0)
+        empty = i;
+        // ignore column 1
+        for (let n = i + 1; n < 4; n++) {
+            grid = document.getElementById("grid-" + n + "-" + j);
+            if (grid.innerHTML.length != 0) {
+                document.getElementById("grid-" + empty + "-" + j).innerHTML = grid.innerHTML;
+                grid.innerHTML = null;
+                empty++;
+                move = true;
+                console.log("move numbers");
+            }
+        }
+    }
+    return move;
+}
+
+function moveUp() {
+    move = false;
+    move = moveUpHelper(move);
+    for (let j = 0; j < 4; j++) {
+        last_num = document.getElementById("grid-" + 0 + "-" + j).innerHTML;
+        if(last_num.length == 0) {
+            continue;
+        }
+        for (let i = 1; i < 4; i++) {
+            current_num = document.getElementById("grid-" + i + "-" + j).innerHTML;
+            if(current_num.length == 0) {
+                break;
+            }
+            else if(current_num === last_num) {
+                num = i - 1;
+                last_grid = document.getElementById("grid-" + num + "-" + j);
+                last_grid.innerHTML = current_num * 2;
+                score += current_num * 2;
+                current_grid = document.getElementById("grid-" + i + "-" + j);
+                current_grid.innerHTML = null;
+                last_num = null;
+                move = true;
+            }
+            else {
+                last_num = current_num
+            }
+        }
+    }
+    move = moveUpHelper(move);
+    if (move) {
+        update_gridCells();
+        change_color();
+        generate_number();
+    }
+    else {
+        check_game_over();
+    }
+}
+
+function moveDownHelper(move) {
+    for (let j = 0; j < 4; j++) {
+        let i = 4;
+        do{
+            i--;
+            grid = document.getElementById("grid-" + i + "-" + j);
+        }while(i >= 0 && grid.innerHTML.length != 0)
+        empty = i;
+        // ignore column 1
+        for (let n = i - 1; n >= 0; n--) {
+            grid = document.getElementById("grid-" + n + "-" + j);
+            if (grid.innerHTML.length != 0) {
+                document.getElementById("grid-" + empty + "-" + j).innerHTML = grid.innerHTML;
+                grid.innerHTML = null;
+                empty--;
+                move = true;
+                console.log("move numbers");
+            }
+        }
+    }
+    return move;
+}
+
+function moveDown() {
+    move = false;
+    move = moveDownHelper(move);
+    for (let j = 0; j < 4; j++) {
+        last_num = document.getElementById("grid-" + 3 + "-" + j).innerHTML;
+        if(last_num.length == 0) {
+            continue;
+        }
+        for (let i = 2; i >= 0; i--) {
+            current_num = document.getElementById("grid-" + i + "-" + j).innerHTML;
+            if(current_num.length == 0) {
+                break;
+            }
+            else if(current_num === last_num) {
+                num = i + 1;
+                last_grid = document.getElementById("grid-" + num + "-" + j);
+                last_grid.innerHTML = current_num * 2;
+                score += current_num * 2;
+                current_grid = document.getElementById("grid-" + i + "-" + j);
+                current_grid.innerHTML = null;
+                last_num = null;
+                move = true;
+            }
+            else {
+                last_num = current_num
+            }
+        }
+    }
+    move = moveDownHelper(move);
+    if (move) {
+        update_gridCells();
+        change_color();
+        generate_number();
+    }
+    else {
+        check_game_over();
+    }
 }
 
 // update game
@@ -145,25 +404,19 @@ window.addEventListener("keydown", function (event) {
     switch (event.key) {
       case "ArrowDown":
         // if successfully move to left, and move to left
-        if (moveLeft(board)) {
-            // generate a num
-            generate_number();
-            // check game conditon
-            check_game_over();
-        }
+        moveDown();
         break;
       case "ArrowUp":
         // code for "up arrow" key press.
-        generate_number();
-
+        moveUp();
         break;
       case "ArrowLeft":
         // code for "left arrow" key press.
-        generate_number();
+        moveLeft();
         break;
       case "ArrowRight":
         // code for "right arrow" key press.
-        generate_number();
+        moveRight();
         break;
       default:
         return; // Quit when this doesn't handle the key event.
@@ -171,30 +424,35 @@ window.addEventListener("keydown", function (event) {
   
     // Cancel the default action to avoid it being handled twice
     event.preventDefault();
+}, true);
 
-    updateBoard();
+function translate() {
+
+    let xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("load", responseReceivedHandler);
+
+    let text = button.innerHTML;
+    // let apiKey = "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f";
+    xhr.open("POST", "https://google-translate1.p.rapidapi.com/language/translate/v2");
+    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+    // xhr.setRequestHeader("Accept-Encoding", "application/gzip");
+    xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
+    xhr.setRequestHeader("X-RapidAPI-Key", "0c68a140c6msh5173f22773b2ed7p1dd524jsn2cb3173b445b");
+
+    let data = "q=" + text + "&target=de"
+    xhr.send(data);
+
+}
     
-  }, true);
-
-function updateBoard(board) {
-    // update board
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            if (board[i][j] != 0) {
-                document.getElementById("grid-" + i + "-" + j).innerHTML = board[i][j];  
-            }
-                      
-        }
+function responseReceivedHandler() {
+    let text = document.getElementById("button");
+    if (this.status === 200) {
+        object = JSON.parse(this.responseText)
+        text.innerHTML = object.data.translations[0].translatedText;
+    } else {
+        text.innerHTML = "Translation Error";
     }
 }
-
-  // ==========================TODO LIST========================
-  // 1. move logic
-  // 2. unique color for numbers
-    // array of colors corresponding to powers
-    // or switch block
-  // 3. resize 
-    // （CSS什么苟b东西永远写不对了woc）
-  // 4. animation (optional)
-    // 怎么别人写的那么丝滑啊
 

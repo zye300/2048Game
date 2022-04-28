@@ -11,7 +11,7 @@ const mysql = require("mysql2")
 const conn = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "xxx",
+    password: "Bella20020125Y",
     database: "CS2803"
 })
 
@@ -102,6 +102,7 @@ app.post("/attempt_login", function(req, res){
 
 // if the user navigates to localhost:3000/main, then the main page will be loaded.
 app.get("/main", function(req, res){
+    console.log(authenticated);
     if(authenticated){
         res.sendFile(__dirname + "/public/" + "main.html");
     }else{
