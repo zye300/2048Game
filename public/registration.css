@@ -15,7 +15,6 @@ body{
 label{
     display: inline-block;
     /* margin: 20px, auto; */
-    
     width:auto;
     padding: 2.5px;
     margin: 2.5px;
@@ -46,4 +45,8 @@ input{
 }
 a{
     color: #9e4040d8;
+}
+
+#password:focus,#confirm_password:focus{
+    background-color: #F08080;
 }

@@ -5,7 +5,7 @@ let translateButton = document.getElementById("translate");
 
 // listen newGame button
 button.addEventListener("click", initGame);
-translateButton.addEventListener("click", translate);
+translateButton.addEventListener("click", translateAll);
 // init array of empty cells
     // ========= var name changed for explicitness =========
 gridCells = new Array(16).fill(false);
@@ -20,8 +20,12 @@ else {
 
 
 
+// ===========================================================
+// gridCells = new Array(16).fill(false);
+// ===========================================================
 
-// Initialization board
+
+// initialize board
 function initGame(){
     for (let i = 0; i < 4; i++) {
         for(let j = 0; j < 4; j++) {
@@ -49,6 +53,7 @@ function initGame(){
 }
 
 
+
 // generate one number
 function generate_number() {
     console.log("Call generate");
@@ -56,7 +61,8 @@ function generate_number() {
     if(!check_game_over()) {
         num = Math.floor(Math.random() * 16);
         // find an empty cell
-        while(gridCells[num] == true) {
+        // ======= board[Math.floor(num / 4)][num % 4] != 0 ============
+        while(!document.getElementById("grid-" + (num / 4) + "-" + (num % 4)).innerHTML) {
             num = Math.floor(Math.random() * 16);
         }
         grid = document.getElementById("grid-" + Math.floor(num / 4) + "-" +num % 4);
@@ -92,7 +98,7 @@ function update_gridCells() {
 function check_game_over() {
     console.log("call check game over");
     for(let i = 0; i < 16; i++) {
-        if(!gridCells[i]) {
+        if(board[Math.floor(i / 4)][i % 4] == 0) {
             console.log("Not Game over");
             return false;
         }
@@ -442,6 +448,29 @@ document.addEventListener("keydown", function (event) {
     event.preventDefault();
 }, false);
 
+function translateAll() {
+    translateMain();
+    translateHistory();
+    translateNG();
+}
+
+function translateMain() {
+    let text = document.getElementById("mainBtn").innerHTML;
+    let xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("load", handleMain);
+    // let apiKey = "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f";
+    xhr.open("POST", "https://google-translate1.p.rapidapi.com/language/translate/v2");
+    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
+    xhr.setRequestHeader("X-RapidAPI-Key", "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f");
+
+    let data = "q=" + text + "&target=de"
+    xhr.send(data);
+}
+
+/*
 function translate() {
 
     let xhr = new XMLHttpRequest();
@@ -459,11 +488,11 @@ function translate() {
 
     let data = "q=" + text + "&target=es"
     xhr.send(data);
-
 }
+*/
     
-function responseReceivedHandler() {
-    let text = document.getElementById("button");
+function handleMain() {
+    let text = document.getElementById("mainBtn");
     if (this.status === 200) {
         object = JSON.parse(this.responseText)
         text.innerHTML = object.data.translations[0].translatedText;
@@ -472,3 +501,52 @@ function responseReceivedHandler() {
     }
 }
 
+function translateHistory() {
+    let text = document.getElementById("historyBtn").innerHTML;
+    let xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("load", handleHistory);
+    // let apiKey = "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f";
+    xhr.open("POST", "https://google-translate1.p.rapidapi.com/language/translate/v2");
+    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
+    xhr.setRequestHeader("X-RapidAPI-Key", "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f");
+
+    let data = "q=" + text + "&target=de"
+    xhr.send(data);
+}
+function handleHistory() {
+    let text = document.getElementById("historyBtn");
+    if (this.status === 200) {
+        object = JSON.parse(this.responseText)
+        text.innerHTML = object.data.translations[0].translatedText;
+    } else {
+        text.innerHTML = "Translation Error";
+    }
+}
+
+function translateNG() {
+    let text = document.getElementById("button").innerHTML;
+    let xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("load", handleNG);
+    // let apiKey = "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f";
+    xhr.open("POST", "https://google-translate1.p.rapidapi.com/language/translate/v2");
+    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
+    xhr.setRequestHeader("X-RapidAPI-Key", "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f");
+
+    let data = "q=" + text + "&target=de"
+    xhr.send(data);
+}
+function handleNG() {
+    let text = document.getElementById("button");
+    if (this.status === 200) {
+        object = JSON.parse(this.responseText)
+        text.innerHTML = object.data.translations[0].translatedText;
+    } else {
+        text.innerHTML = "Translation Error";
+    }
+}
