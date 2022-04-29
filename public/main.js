@@ -4,13 +4,13 @@ let translateButton = document.getElementById("translate");
 
 // listen newGame button
 button.addEventListener("click", initGame);
-translateButton.addEventListener("click", translate);
+translateButton.addEventListener("click", translateAll);
 // init array of empty cells
     // ========= var name changed for explicitness =========
 gridCells = new Array(16).fill(false);
 // user score
 var score = 0;
-if (window.localStorage.getItem("scores").length == 0) {
+if (window.localStorage.getItem("scores") == null) {
     var scores = []
 }
 else {
@@ -27,11 +27,9 @@ else {
 // initialize board
 function initGame(){
     for (let i = 0; i < 4; i++) {
-        board[i] = new Array();
         for(let j = 0; j < 4; j++) {
             // init grid cells in 4*4 board
-            board[i][j] = 0;
-            document.getElementById("grid-" + i + "-" + j).innerHTML = '';
+            document.getElementById("grid-" + i +"-" +j).innerHTML=null;
         }
     }
 
@@ -52,6 +50,7 @@ function initGame(){
     show_score(score);
     change_color();
 }
+
 
 
 // generate one number
@@ -426,6 +425,29 @@ window.addEventListener("keydown", function (event) {
     event.preventDefault();
 }, true);
 
+function translateAll() {
+    translateMain();
+    translateHistory();
+    translateNG();
+}
+
+function translateMain() {
+    let text = document.getElementById("mainBtn").innerHTML;
+    let xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("load", handleMain);
+    // let apiKey = "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f";
+    xhr.open("POST", "https://google-translate1.p.rapidapi.com/language/translate/v2");
+    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
+    xhr.setRequestHeader("X-RapidAPI-Key", "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f");
+
+    let data = "q=" + text + "&target=de"
+    xhr.send(data);
+}
+
+/*
 function translate() {
 
     let xhr = new XMLHttpRequest();
@@ -443,11 +465,11 @@ function translate() {
 
     let data = "q=" + text + "&target=de"
     xhr.send(data);
-
 }
+*/
     
-function responseReceivedHandler() {
-    let text = document.getElementById("button");
+function handleMain() {
+    let text = document.getElementById("mainBtn");
     if (this.status === 200) {
         object = JSON.parse(this.responseText)
         text.innerHTML = object.data.translations[0].translatedText;
@@ -456,3 +478,52 @@ function responseReceivedHandler() {
     }
 }
 
+function translateHistory() {
+    let text = document.getElementById("historyBtn").innerHTML;
+    let xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("load", handleHistory);
+    // let apiKey = "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f";
+    xhr.open("POST", "https://google-translate1.p.rapidapi.com/language/translate/v2");
+    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
+    xhr.setRequestHeader("X-RapidAPI-Key", "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f");
+
+    let data = "q=" + text + "&target=de"
+    xhr.send(data);
+}
+function handleHistory() {
+    let text = document.getElementById("historyBtn");
+    if (this.status === 200) {
+        object = JSON.parse(this.responseText)
+        text.innerHTML = object.data.translations[0].translatedText;
+    } else {
+        text.innerHTML = "Translation Error";
+    }
+}
+
+function translateNG() {
+    let text = document.getElementById("button").innerHTML;
+    let xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("load", handleNG);
+    // let apiKey = "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f";
+    xhr.open("POST", "https://google-translate1.p.rapidapi.com/language/translate/v2");
+    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
+    xhr.setRequestHeader("X-RapidAPI-Key", "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f");
+
+    let data = "q=" + text + "&target=de"
+    xhr.send(data);
+}
+function handleNG() {
+    let text = document.getElementById("button");
+    if (this.status === 200) {
+        object = JSON.parse(this.responseText)
+        text.innerHTML = object.data.translations[0].translatedText;
+    } else {
+        text.innerHTML = "Translation Error";
+    }
+}
