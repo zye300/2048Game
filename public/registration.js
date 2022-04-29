@@ -55,12 +55,13 @@ function checkPassword() {
     } else {
         password.style.backgroundColor = "#F08080";
     }
+    checkConfirm();
 }
 
 function checkConfirm() {
     let confirm = document.getElementById("confirm_password");
     let password = document.getElementById("password");
-    if (confirm.value == password.value) {
+    if (confirm.value === password.value) {
         confirm.style.backgroundColor = "#00FF7F";
     } else {
         confirm.style.backgroundColor = "#F08080";

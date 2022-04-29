@@ -62,7 +62,7 @@ function generate_number() {
         num = Math.floor(Math.random() * 16);
         // find an empty cell
         // ======= board[Math.floor(num / 4)][num % 4] != 0 ============
-        while(!document.getElementById("grid-" + (num / 4) + "-" + (num % 4)).innerHTML) {
+        while(gridCells[num] == true) {
             num = Math.floor(Math.random() * 16);
         }
         grid = document.getElementById("grid-" + Math.floor(num / 4) + "-" +num % 4);
@@ -98,7 +98,7 @@ function update_gridCells() {
 function check_game_over() {
     console.log("call check game over");
     for(let i = 0; i < 16; i++) {
-        if(board[Math.floor(i / 4)][i % 4] == 0) {
+        if(!gridCells[i]) {
             console.log("Not Game over");
             return false;
         }
@@ -464,32 +464,16 @@ function translateMain() {
     xhr.open("POST", "https://google-translate1.p.rapidapi.com/language/translate/v2");
     xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
     xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
-    xhr.setRequestHeader("X-RapidAPI-Key", "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f");
-
+    xhr.setRequestHeader("X-RapidAPI-Key", "65f5b18969msh81dcb0c5a531164p1ccaf3jsn04868a3a53a8");
+    /* if it shows "translation error" when you test the code,
+        thats probably because it exceeds the max num of requests.
+        Please go to https://rapidapi.com/googlecloud/api/google-translate1/pricing
+        so that you can apply for a new free API key and paste it into the API key field above
+        and those in translateHistory() and translateNG().
+    */
     let data = "q=" + text + "&target=de"
     xhr.send(data);
 }
-
-/*
-function translate() {
-
-    let xhr = new XMLHttpRequest();
-    xhr.withCredentials = true;
-
-    xhr.addEventListener("load", responseReceivedHandler);
-
-    let text = button.innerHTML;
-    // let apiKey = "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f";
-    xhr.open("POST", "https://google-translate1.p.rapidapi.com/language/translate/v2");
-    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
-    // xhr.setRequestHeader("Accept-Encoding", "application/gzip");
-    xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
-    xhr.setRequestHeader("X-RapidAPI-Key", "0c68a140c6msh5173f22773b2ed7p1dd524jsn2cb3173b445b");
-
-    let data = "q=" + text + "&target=es"
-    xhr.send(data);
-}
-*/
     
 function handleMain() {
     let text = document.getElementById("mainBtn");
@@ -511,7 +495,7 @@ function translateHistory() {
     xhr.open("POST", "https://google-translate1.p.rapidapi.com/language/translate/v2");
     xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
     xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
-    xhr.setRequestHeader("X-RapidAPI-Key", "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f");
+    xhr.setRequestHeader("X-RapidAPI-Key", "65f5b18969msh81dcb0c5a531164p1ccaf3jsn04868a3a53a8");
 
     let data = "q=" + text + "&target=de"
     xhr.send(data);
@@ -536,7 +520,7 @@ function translateNG() {
     xhr.open("POST", "https://google-translate1.p.rapidapi.com/language/translate/v2");
     xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
     xhr.setRequestHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
-    xhr.setRequestHeader("X-RapidAPI-Key", "e0b6949dbfmsh5b51f951e165f81p143143jsne9c6d689d56f");
+    xhr.setRequestHeader("X-RapidAPI-Key", "65f5b18969msh81dcb0c5a531164p1ccaf3jsn04868a3a53a8");
 
     let data = "q=" + text + "&target=de"
     xhr.send(data);
